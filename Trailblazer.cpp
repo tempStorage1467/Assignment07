@@ -11,24 +11,6 @@
 #include "TrailblazerPQueue.h"
 using namespace std;
 
-
-/*
- Don't forget to adjust the parent pointers in Dijkstra's algorithm or A* search after calling decreaseKey. Otherwise, even though you'll dequeue the nodes in the proper order, your resulting path will be incorrect.
- */
-
-/*
- Dijkstra's algorithm has found the shortest path from the start node to the end only when the
- end node has been dequeued from the priority queue (that is, when it colors the node green). It
- is possible to enqueue the end node into the priority queue but still not have a shortest path to it,
- since there might be a shorter path to the end node that has not been considered yet.
- */
-
-/*
- Although A* search enqueues nodes into the priority queue with a priority based on both the
- node candidate distances and their heuristic values, it tracks their candidate distances independently of their heuristic costs. When storing the candidate distance to a node, do not add the
- heuristic value in. The heuristic is only used when setting the priorities in the priority queue
- */
-
 /*
  * This function is also a wrapper for colorCell(); This ensures that we
  *   never accidently introduce a bug where the status of the cell is
@@ -40,7 +22,6 @@ void setNodeColor(Loc cell, Grid<Color>& nodeColors,
     if (cell.col > nodeColors.nCols || cell.row > nodeColors.nRows) {
         error("The cell is out of bounds");
     }
-    
     switch (color) {
         case GRAY:
             nodeColors[cell.row][cell.col] = GRAY;
@@ -74,14 +55,7 @@ shortestPath(Loc start,
              Loc end,
              Grid<double>& world,
              double costFn(Loc from, Loc to, Grid<double>& world)) {
-    
-    // remember that once we've dequeued something, it is the cheapest path period
-    
     ////////// SETUP CODE //////////
-    // keep a counter for the number of visited cells; Dijkstra's algorithm
-    //  continues as long as we have unvisited cells
-    int cellsVisited = 0;
-    
     // store the parent cells for each specific location
     Grid<Loc> parentCell(world.numRows(), world.numCols());
         
@@ -91,13 +65,8 @@ shortestPath(Loc start,
     
     // priority queue to store locations to examine and their associated costs
     TrailblazerPQueue<Loc> locsToExamine;
-    
-    // shortest (or cheapest) path
-    Vector<Loc> finalPathToEndCell;
-    
+        
     ////////// FOLLOWING PSEUDOCODE //////////
-    // denote that all cells are currently grey; this behavior occurs by default
-    //   as Gray is the default enum value
     // this grid is also used to store which cells are in the priority queue
     //   as a cell that is in the priority queue will be yellow while a cell
     //   that has been visited will be green
@@ -113,10 +82,9 @@ shortestPath(Loc start,
     locsToExamine.enqueue(start, 0);
     
     // While not all nodes have been visited
-    while (cellsVisited < world.numCols() * world.numRows()) {
+    while (true) {
         // Dequeue the lowest-cost node curr from the priority queue.
         Loc curr = locsToExamine.dequeueMin();
-        cellsVisited++;
         
         // Color curr green. (The candidate distance dist that is currently
         //   stored for node curr is the length of the shortest path from
@@ -127,7 +95,7 @@ shortestPath(Loc start,
         //   shortest path from startNode to endNode
         if (curr == end) break;
 
-        cout << "Cur: " << curr.row << ", " << curr.col << endl;
+     //   cout << "Cur: " << curr.row << ", " << curr.col << endl;
         
         // For each node v connected to curr by an edge of length L:
         for (int row = curr.row - 1; row < curr.row + 2; row++) {
@@ -136,8 +104,8 @@ shortestPath(Loc start,
                 if (row < 0 || row >= world.numRows() ||
                     col < 0 || col >= world.numCols()) continue;
                 
-                cout << "Seeing a new cell" << endl;
-                cout << row << ", " << col << endl;
+              //  cout << "Seeing a new cell" << endl;
+              //  cout << row << ", " << col << endl;
                 
                 // set v, the candidate cell, to be a location object
                 Loc v = makeLoc(row, col);
@@ -146,7 +114,8 @@ shortestPath(Loc start,
                 //   to the current cell plus the incremental cost to get
                 //   to the adjacent neighbor cell
                 // = dist + L in pseudocode
-                double vPathCost = nodeCosts[curr.row][curr.col] + costFn(curr, v, world);
+                double vPathCost = nodeCosts[curr.row][curr.col] +
+                                   costFn(curr, v, world);
                 
                 if (cellColors[v.row][v.col] == GRAY) {
                     setNodeColor(v, cellColors, world, YELLOW);
@@ -165,14 +134,23 @@ shortestPath(Loc start,
     
     // found end node; trace back parent cell for each cell in the path
     //   and add each path cell to the output vector
+    // shortest (or cheapest) path
+    Vector<Loc> tempReversePath;
     Loc curr = end;
     while (curr != start) {
-        finalPathToEndCell += curr;
+        tempReversePath += curr;
         curr = parentCell[curr.row][curr.col];
     }
-    finalPathToEndCell+= start;
+    tempReversePath+= start;
     
-    return finalPathToEndCell;
+    // the vector that is returned with the path should have the
+    //   start location at element 0, not at element size() - 1
+    Vector<Loc> finalPath;
+    for (int i = tempReversePath.size() - 1; i >=0; i--) {
+        finalPath += tempReversePath[i];
+    }
+    
+    return finalPath;
 }
 
 Set<Edge> createMaze(int numRows, int numCols) {
