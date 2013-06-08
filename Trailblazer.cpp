@@ -60,7 +60,8 @@ Vector<Loc>
 shortestPath(Loc start,
              Loc end,
              Grid<double>& world,
-             double costFn(Loc from, Loc to, Grid<double>& world)) {
+             double costFn(Loc from, Loc to, Grid<double>& world),
+             double heuristic(Loc start, Loc end, Grid<double>& world)) {
     ////////// SETUP CODE //////////
     // store the parent cells for each specific location
     Grid<Loc> parentCell(world.numRows(), world.numCols());
@@ -81,8 +82,8 @@ shortestPath(Loc start,
     // color the start node yellow; marks node is in PQueue
     setNodeColor(start, cellColors, world, YELLOW);
     
-    // set startNode's candidate distance to 0
-    nodeCosts[start.row][start.col] = 0;
+    // set startNode's candidate distance to 0 (or h(startNode, endNode)).
+    nodeCosts[start.row][start.col] = heuristic(start, end, world);
 
     // Enqueue startNode into the priority queue with priority 0.
     locsToExamine.enqueue(start, 0);
@@ -127,7 +128,7 @@ shortestPath(Loc start,
                     setNodeColor(v, cellColors, world, YELLOW);
                     nodeCosts[row][col] = vPathCost;
                     parentCell[row][col] = curr;
-                    locsToExamine.enqueue(v, vPathCost);
+                    locsToExamine.enqueue(v, vPathCost + heuristic(v, end, world));
                 }
                 // Otherwise, if v is yellow and the candidate distance to v is greater than dist + L:
                 //   (a) Set v's candidate distance to be dist + L.
@@ -137,7 +138,7 @@ shortestPath(Loc start,
                            nodeCosts[v.row][v.col] > vPathCost) {
                     nodeCosts[v.row][v.col] = vPathCost;
                     parentCell[v.row][v.col] = curr;
-                    locsToExamine.decreaseKey(v, vPathCost);
+                    locsToExamine.decreaseKey(v, vPathCost + heuristic(v, end, world));
                 }
             }
         }
