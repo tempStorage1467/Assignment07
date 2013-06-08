@@ -19,19 +19,23 @@ using namespace std;
  */
 void setNodeColor(Loc cell, Grid<Color>& nodeColors,
                    Grid<double>& world, Color color) {
-    if (cell.col > nodeColors.nCols || cell.row > nodeColors.nRows) {
+    if (cell.col >= nodeColors.nCols || cell.row >= nodeColors.nRows) {
         error("The cell is out of bounds");
     }
+    
     switch (color) {
         case GRAY:
             nodeColors[cell.row][cell.col] = GRAY;
             colorCell(world, cell, GRAY);
+            break;
         case YELLOW:
             nodeColors[cell.row][cell.col] = YELLOW;
             colorCell(world, cell, YELLOW);
+            break;
         case GREEN:
             nodeColors[cell.row][cell.col] = GREEN;
             colorCell(world, cell, GREEN);
+            break;
     }
 }
 
@@ -94,19 +98,14 @@ shortestPath(Loc start,
         // If curr is the destination node endNode, you have found the
         //   shortest path from startNode to endNode
         if (curr == end) break;
-
-     //   cout << "Cur: " << curr.row << ", " << curr.col << endl;
         
         // For each node v connected to curr by an edge of length L:
         for (int row = curr.row - 1; row < curr.row + 2; row++) {
             for (int col = curr.col - 1; col < curr.col + 2; col++) {
-                if (row == curr.row && col == curr.col) continue;
+                //if (row == curr.row && col == curr.col) continue;
                 if (row < 0 || row >= world.numRows() ||
                     col < 0 || col >= world.numCols()) continue;
-                
-              //  cout << "Seeing a new cell" << endl;
-              //  cout << row << ", " << col << endl;
-                
+                                
                 // set v, the candidate cell, to be a location object
                 Loc v = makeLoc(row, col);
                 
