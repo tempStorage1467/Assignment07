@@ -1,6 +1,8 @@
 /******************************************************************************
  * File: Trailblazer.cpp
  *
+ * Eric Beach
+ *
  * Implementation of the graph algorithms that comprise the Trailblazer
  * assignment.
  */
@@ -116,12 +118,22 @@ shortestPath(Loc start,
                 double vPathCost = nodeCosts[curr.row][curr.col] +
                                    costFn(curr, v, world);
                 
+                
+                // If v is gray: (a) Color v yellow.
+                //   (b) Set v's candidate distance to be dist + L.
+                //   (c) Set v's parent to be curr.
+                //   (d) Enqueue v into the priority queue with priority dist + L.
                 if (cellColors[v.row][v.col] == GRAY) {
                     setNodeColor(v, cellColors, world, YELLOW);
                     nodeCosts[row][col] = vPathCost;
                     parentCell[row][col] = curr;
                     locsToExamine.enqueue(v, vPathCost);
-                } else if (cellColors[v.row][v.col] == YELLOW &&
+                }
+                // Otherwise, if v is yellow and the candidate distance to v is greater than dist + L:
+                //   (a) Set v's candidate distance to be dist + L.
+                //   (b) Set v's parent to be curr.
+                //   (c) Update v's priority in the priority queue to dist + L.
+                else if (cellColors[v.row][v.col] == YELLOW &&
                            nodeCosts[v.row][v.col] > vPathCost) {
                     nodeCosts[v.row][v.col] = vPathCost;
                     parentCell[v.row][v.col] = curr;
@@ -148,7 +160,6 @@ shortestPath(Loc start,
     for (int i = tempReversePath.size() - 1; i >=0; i--) {
         finalPath += tempReversePath[i];
     }
-    
     return finalPath;
 }
 
