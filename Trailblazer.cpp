@@ -11,36 +11,11 @@
 #include "TrailblazerGraphics.h"
 #include "TrailblazerTypes.h"
 #include "TrailblazerPQueue.h"
+#include "random.h"
+#include "UnionFind.h"
+#include "set.h"
+
 using namespace std;
-
-/*
- * This function is also a wrapper for colorCell(); This ensures that we
- *   never accidently introduce a bug where the status of the cell is
- *   changed in one location (i.e., the Grid that tracks the cell status)
- *   but there is no attendant call to colorCell();
- */
-void setNodeColor(Loc cell, Grid<Color>& nodeColors,
-                   Grid<double>& world, Color color) {
-    if (cell.col >= nodeColors.nCols || cell.row >= nodeColors.nRows) {
-        error("The cell is out of bounds");
-    }
-    
-    switch (color) {
-        case GRAY:
-            nodeColors[cell.row][cell.col] = GRAY;
-            colorCell(world, cell, GRAY);
-            break;
-        case YELLOW:
-            nodeColors[cell.row][cell.col] = YELLOW;
-            colorCell(world, cell, YELLOW);
-            break;
-        case GREEN:
-            nodeColors[cell.row][cell.col] = GREEN;
-            colorCell(world, cell, GREEN);
-            break;
-    }
-}
-
 
 /* Function: shortestPath
  * 
@@ -80,7 +55,8 @@ shortestPath(Loc start,
     Grid<Color> cellColors(world.numRows(), world.numCols());
     
     // color the start node yellow; marks node is in PQueue
-    setNodeColor(start, cellColors, world, YELLOW);
+    cellColors[start.row][start.col] = YELLOW;
+    colorCell(world, start, YELLOW);
     
     // set startNode's candidate distance to 0 (or h(startNode, endNode)).
     nodeCosts[start.row][start.col] = heuristic(start, end, world);
@@ -96,7 +72,8 @@ shortestPath(Loc start,
         // Color curr green. (The candidate distance dist that is currently
         //   stored for node curr is the length of the shortest path from
         //   startNode to curr.)
-        setNodeColor(curr, cellColors, world, GREEN);
+        cellColors[curr.row][curr.col] = GREEN;
+        colorCell(world, curr, GREEN);
         
         // If curr is the destination node endNode, you have found the
         //   shortest path from startNode to endNode
@@ -125,7 +102,9 @@ shortestPath(Loc start,
                 //   (c) Set v's parent to be curr.
                 //   (d) Enqueue v into the priority queue with priority dist + L.
                 if (cellColors[v.row][v.col] == GRAY) {
-                    setNodeColor(v, cellColors, world, YELLOW);
+                    cellColors[v.row][v.col] = YELLOW;
+                    colorCell(world, v, YELLOW);
+                    
                     nodeCosts[row][col] = vPathCost;
                     parentCell[row][col] = curr;
                     locsToExamine.enqueue(v, vPathCost + heuristic(v, end, world));
@@ -165,7 +144,68 @@ shortestPath(Loc start,
 }
 
 Set<Edge> createMaze(int numRows, int numCols) {
-	// TODO: Fill this in!
-	error("createMaze is not implemented yet.");
-    return Set<Edge>();
+//    numCols = 5;
+//    numRows = 4;
+    
+    // STEP 1: Construct the edges and place them into a data structure
+    Set<Edge> edges;
+    //         Step 1A: Construct Horizontal Edges
+    for (int row = 0; row < numRows; row++) {
+        for (int col = 0; col < numCols - 1; col++) {
+            Loc a = makeLoc(row, col);
+            Loc b = makeLoc(row, col + 1);
+            Edge ab = makeEdge(a, b);
+            
+           // cout << "(" << row << ", " << col << ") to (" << row << ", " << (col + 1) << ")" << endl;
+            
+            edges.add(ab);
+        }
+    }
+    
+    //         Step 1B: Construct Vertical Edges
+    for (int col = 0; col < numCols; col++) {
+        for (int row = 0; row < numRows - 1; row++) {
+            Loc a = makeLoc(row, col);
+            Loc b = makeLoc(row + 1, col);
+            Edge ab = makeEdge(a, b);
+            
+           // cout << "(" << row << ", " << col << ") to (" << (row + 1) << ", " << col << ")" << endl;
+            
+            edges.add(ab);
+        }
+    }
+    
+    // STEP 2: Place all edges into priority queue with random weight/length/cost
+    TrailblazerPQueue<Edge> pQueue;
+    
+    // Step 2-B: Create a UnionFind, used to determine if an edge is from
+    //   the same cluster
+    UnionFind clusters(numRows * numCols, numCols);
+    
+    // Place the edges into the PriorityQueue and the UnionFind
+    foreach (Edge next in edges) {
+        clusters.makeSet(next.start);
+        clusters.makeSet(next.end);
+        pQueue.enqueue(next, randomReal(0, 100));
+    }
+    
+    // Pre Step 3: Setup a data structure to store the result of the edges
+    Set<Edge> result;
+    // STEP 3: While the priority queue is not empty:
+    while (!pQueue.isEmpty()) {
+        //         Step 3A: Dequeue an edge from the priority queue.
+        Edge next = pQueue.dequeueMin();
+        
+        //         Step 3B: If the endpoints of the edge aren't already connected
+        //                  to one another, add in that edge.
+        if (clusters.find(next.start) != clusters.find(next.end)) {
+            // add the next edge to the final set of edges
+            result += next;
+            
+            // join the two locations into the same cluster
+            clusters.join(next.start, next.end);
+        }
+        //         Step 3C: Otherwise, skip the edge.
+    }
+    return result;
 }
