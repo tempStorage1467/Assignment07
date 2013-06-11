@@ -14,6 +14,7 @@
 #include "random.h"
 #include "UnionFind.h"
 #include "set.h"
+#include "PrimHelper.h"
 
 using namespace std;
 
@@ -38,9 +39,19 @@ shortestPath(Loc start,
              double costFn(Loc from, Loc to, Grid<double>& world),
              double heuristic(Loc start, Loc end, Grid<double>& world)) {
     ////////// SETUP CODE //////////
-    // store the parent cells for each specific location
-    Grid<Loc> parentCell(world.numRows(), world.numCols());
-        
+    /*
+     * From an efficiency stanfpoint, I chose to use three grids to represent
+     *    the underlying data I needed for this assignment (parent nodes,
+     *    node costs, and node colors). I did this because in using this data,
+     *    I would always know the (row, col) coordinates and as such, I wanted
+     *    a data structure that would allow for very fast x, y lookups. A Grid
+     *    is such a structure. Further, it is always a good idea to use
+     *    someone else's well written and optimized library code when you can
+     *    instead of writing your own.
+     */
+    // store the parent cells/nodes for each specific location
+    Grid<Loc> parentNode(world.numRows(), world.numCols());
+
     // stores the total cost in getting from the start node to any
     //   given cell; remember that this is a cumulative cost
     Grid<double> nodeCosts(world.numRows(), world.numCols());
@@ -106,7 +117,7 @@ shortestPath(Loc start,
                     colorCell(world, v, YELLOW);
                     
                     nodeCosts[row][col] = vPathCost;
-                    parentCell[row][col] = curr;
+                    parentNode[row][col] = curr;
                     locsToExamine.enqueue(v, vPathCost + heuristic(v, end, world));
                 }
                 // Otherwise, if v is yellow and the candidate distance to v is greater than dist + L:
@@ -116,7 +127,7 @@ shortestPath(Loc start,
                 else if (cellColors[v.row][v.col] == YELLOW &&
                            nodeCosts[v.row][v.col] > vPathCost) {
                     nodeCosts[v.row][v.col] = vPathCost;
-                    parentCell[v.row][v.col] = curr;
+                    parentNode[v.row][v.col] = curr;
                     locsToExamine.decreaseKey(v, vPathCost + heuristic(v, end, world));
                 }
             }
@@ -130,7 +141,7 @@ shortestPath(Loc start,
     Loc curr = end;
     while (curr != start) {
         tempReversePath += curr;
-        curr = parentCell[curr.row][curr.col];
+        curr = parentNode[curr.row][curr.col];
     }
     tempReversePath+= start;
     
@@ -143,9 +154,15 @@ shortestPath(Loc start,
     return finalPath;
 }
 
+Set<Edge> createMazePrim(int numRows, int numCols);
+
+/* Function: createMaze
+ *
+ * Take a number of rows and a number of columns and construct a maze
+ *   by eliminating some nodes via Kruskal's Algorithm
+ */
 Set<Edge> createMaze(int numRows, int numCols) {
-//    numCols = 5;
-//    numRows = 4;
+    return createMazePrim(numRows, numCols);
     
     // STEP 1: Construct the edges and place them into a data structure
     Set<Edge> edges;
@@ -155,8 +172,6 @@ Set<Edge> createMaze(int numRows, int numCols) {
             Loc a = makeLoc(row, col);
             Loc b = makeLoc(row, col + 1);
             Edge ab = makeEdge(a, b);
-            
-           // cout << "(" << row << ", " << col << ") to (" << row << ", " << (col + 1) << ")" << endl;
             
             edges.add(ab);
         }
@@ -168,8 +183,6 @@ Set<Edge> createMaze(int numRows, int numCols) {
             Loc a = makeLoc(row, col);
             Loc b = makeLoc(row + 1, col);
             Edge ab = makeEdge(a, b);
-            
-           // cout << "(" << row << ", " << col << ") to (" << (row + 1) << ", " << col << ")" << endl;
             
             edges.add(ab);
         }
@@ -190,6 +203,7 @@ Set<Edge> createMaze(int numRows, int numCols) {
     }
     
     // Pre Step 3: Setup a data structure to store the result of the edges
+    //             to be returned to the calling context.
     Set<Edge> result;
     // STEP 3: While the priority queue is not empty:
     while (!pQueue.isEmpty()) {
@@ -208,4 +222,59 @@ Set<Edge> createMaze(int numRows, int numCols) {
         //         Step 3C: Otherwise, skip the edge.
     }
     return result;
+}
+
+Set<Edge> createMazePrim(int numRows, int numCols) {
+    cout << "Num Rows: " << numRows << endl;
+    cout << "Num Cols: " << numCols << endl;
+    // STEP 1: Construct the edges and place them into a data structure
+    PrimHelper primHelper(numRows, numCols);
+    
+    //         Step 1A: Construct Horizontal Edges
+    for (int row = 0; row < numRows; row++) {
+        for (int col = 0; col < numCols - 1; col++) {
+            Loc a = makeLoc(row, col);
+            Loc b = makeLoc(row, col + 1);
+            Edge ab = makeEdge(a, b);
+            
+            primHelper.add(ab, 5.1);
+        }
+    }
+
+    //         Step 1B: Construct Vertical Edges
+    for (int col = 0; col < numCols; col++) {
+        for (int row = 0; row < numRows - 1; row++) {
+            Loc a = makeLoc(row, col);
+            Loc b = makeLoc(row + 1, col);
+            Edge ab = makeEdge(a, b);
+            
+            primHelper.add(ab, 15.1);
+        }
+    }
+    
+    // STEP 2: Pick arbitrary node to seed the main process of Prim's algorithm
+    Set<Loc> visited;
+    Loc nextLoc = makeLoc(numRows / 2, numCols / 2);
+    visited += nextLoc;
+    Set<Edge> results;
+    
+    // Step 2:B Choose the smallest elligable edge from a location and the move
+    //          to that location and repeat this step
+    int i = 0;
+    while (i < 150) {
+        try {
+            Edge nextEdge = primHelper.getSmallestEligibleNeighborEdge(nextLoc);
+            results += nextEdge;
+            if (nextEdge.start == nextLoc) {
+                nextLoc = nextEdge.end;
+            } else {
+                nextLoc = nextEdge.start;
+            }
+        } catch (ErrorException) {
+            
+            //break;
+        }
+        i++;
+    }
+    return results;
 }

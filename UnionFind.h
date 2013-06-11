@@ -33,7 +33,7 @@ class UnionFind {
     // Join two subsets into one
     void join(const Loc& a, const Loc& b);
     
-    // make a set
+    // make a set (i.e., add a new element as a singleton set)
     void makeSet(const Loc& input);
 
 private:
@@ -59,7 +59,6 @@ private:
     // take a node number (i.e., the index in nodeParents) and
     //   construct the corresponding Loc object
     Loc nodeNumToLoc(const int nodeNum);
-    
     
     // find the node number that is the parent (or representative set number)
     //   for a given node number (i.e., determine which set a node number

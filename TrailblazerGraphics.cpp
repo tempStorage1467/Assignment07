@@ -11,6 +11,7 @@
 #include "filelib.h"
 #include "strlib.h"
 #include "error.h"
+#include "UnionFind.h"
 #include <string>
 #include <iomanip>
 #include <iostream>
@@ -828,13 +829,17 @@ Vector<Loc> invoke(Vector<Loc> pathFn(Loc start,
   return pathFn(start, end, world, costFn, heuristicFn);
 }
 
+#include "UnionFindTest.h"
+
 /* Main program. */
 int main() {
   State state;
   initializeWindow();
   initializeState(state);
   drawWorld(state.world);
-	
+    
+    runUnionFindUnitTests();
+    
   /* Process events as they happen. */
   while (true) {
     GEvent e = waitForEvent(ACTION_EVENT | MOUSE_EVENT);

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1A6964B01763C702000CDAE3 /* UnionFind.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A6964AE1763C702000CDAE3 /* UnionFind.cpp */; };
+		1AA14CF417656DC6006DC103 /* PrimHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AA14CF217656DC6006DC103 /* PrimHelper.cpp */; };
 		2BE9D4EF175D556D00E26346 /* Trailblazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BE9D4E3175D556D00E26346 /* Trailblazer.cpp */; };
 		2BE9D4F0175D556D00E26346 /* TrailblazerCosts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BE9D4E6175D556D00E26346 /* TrailblazerCosts.cpp */; };
 		2BE9D4F1175D556D00E26346 /* TrailblazerGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BE9D4E8175D556D00E26346 /* TrailblazerGraphics.cpp */; };
@@ -19,6 +20,9 @@
 /* Begin PBXFileReference section */
 		1A6964AE1763C702000CDAE3 /* UnionFind.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnionFind.cpp; sourceTree = "<group>"; };
 		1A6964AF1763C702000CDAE3 /* UnionFind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnionFind.h; sourceTree = "<group>"; };
+		1A6964B217640F6E000CDAE3 /* UnionFindTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnionFindTest.h; sourceTree = "<group>"; };
+		1AA14CF217656DC6006DC103 /* PrimHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PrimHelper.cpp; sourceTree = "<group>"; };
+		1AA14CF317656DC6006DC103 /* PrimHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrimHelper.h; sourceTree = "<group>"; };
 		2BE9D4E3175D556D00E26346 /* Trailblazer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Trailblazer.cpp; sourceTree = "<group>"; };
 		2BE9D4E4175D556D00E26346 /* Trailblazer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Trailblazer.h; sourceTree = "<group>"; };
 		2BE9D4E5175D556D00E26346 /* TrailblazerConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrailblazerConstants.h; sourceTree = "<group>"; };
@@ -66,12 +70,15 @@
 				2BE9D4E6175D556D00E26346 /* TrailblazerCosts.cpp */,
 				2BE9D4E7175D556D00E26346 /* TrailblazerCosts.h */,
 				2BE9D4E8175D556D00E26346 /* TrailblazerGraphics.cpp */,
+				1A6964B217640F6E000CDAE3 /* UnionFindTest.h */,
 				2BE9D4E9175D556D00E26346 /* TrailblazerGraphics.h */,
 				2BE9D4EA175D556D00E26346 /* TrailblazerPQueue.h */,
 				2BE9D4EB175D556D00E26346 /* TrailblazerTypes.cpp */,
 				2BE9D4EC175D556D00E26346 /* TrailblazerTypes.h */,
 				1A6964AE1763C702000CDAE3 /* UnionFind.cpp */,
 				1A6964AF1763C702000CDAE3 /* UnionFind.h */,
+				1AA14CF217656DC6006DC103 /* PrimHelper.cpp */,
+				1AA14CF317656DC6006DC103 /* PrimHelper.h */,
 				2BE9D4ED175D556D00E26346 /* WorldGenerator.cpp */,
 				2BE9D4EE175D556D00E26346 /* WorldGenerator.h */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -184,6 +191,7 @@
 				2BE9D4F2175D556D00E26346 /* TrailblazerTypes.cpp in Sources */,
 				2BE9D4F3175D556D00E26346 /* WorldGenerator.cpp in Sources */,
 				1A6964B01763C702000CDAE3 /* UnionFind.cpp in Sources */,
+				1AA14CF417656DC6006DC103 /* PrimHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

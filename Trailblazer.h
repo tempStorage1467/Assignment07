@@ -1,6 +1,8 @@
 /******************************************************************************
  * File: Trailblazer.h
  *
+ * Eric Beach
+ *
  * Exports functions that use Dijkstra's algorithm, A* search, and Kruskal's
  * algorithm as specified in the assignment handout.
  */
