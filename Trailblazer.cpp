@@ -225,8 +225,6 @@ Set<Edge> createMaze(int numRows, int numCols) {
 }
 
 Set<Edge> createMazePrim(int numRows, int numCols) {
-    cout << "Num Rows: " << numRows << endl;
-    cout << "Num Cols: " << numCols << endl;
     // STEP 1: Construct the edges and place them into a data structure
     PrimHelper primHelper(numRows, numCols);
     
@@ -237,7 +235,7 @@ Set<Edge> createMazePrim(int numRows, int numCols) {
             Loc b = makeLoc(row, col + 1);
             Edge ab = makeEdge(a, b);
             
-            primHelper.add(ab, 5.1);
+            primHelper.add(ab, randomReal(0, 100));
         }
     }
 
@@ -248,33 +246,33 @@ Set<Edge> createMazePrim(int numRows, int numCols) {
             Loc b = makeLoc(row + 1, col);
             Edge ab = makeEdge(a, b);
             
-            primHelper.add(ab, 15.1);
+            primHelper.add(ab, randomReal(0, 100));
         }
     }
     
-    // STEP 2: Pick arbitrary node to seed the main process of Prim's algorithm
+    // STEP 2: Traverse through the graph picking the minimum adjacent node
+    //   that does not create a cycle
+
+    // STEP 2-A: Create a set of nodes (i.e., Loc's) that we've visited
     Set<Loc> visited;
+    
+    // STEP 2-B: Pick arbitrary node to seed the main process of Prim's algorithm
     Loc nextLoc = makeLoc(numRows / 2, numCols / 2);
     visited += nextLoc;
+    
+    // STEP 2-C: Create a set of result edges (i.e., the final edges)
     Set<Edge> results;
     
-    // Step 2:B Choose the smallest elligable edge from a location and the move
+    // Step 2:D Choose the smallest elligable edge from a location and the move
     //          to that location and repeat this step
-    int i = 0;
-    while (i < 150) {
+    while (true) {
         try {
-            Edge nextEdge = primHelper.getSmallestEligibleNeighborEdge(nextLoc);
+            Edge nextEdge = primHelper.getNextEdge(visited);
             results += nextEdge;
-            if (nextEdge.start == nextLoc) {
-                nextLoc = nextEdge.end;
-            } else {
-                nextLoc = nextEdge.start;
-            }
         } catch (ErrorException) {
-            
-            //break;
+            // nothing more to explore, so quit
+            break;
         }
-        i++;
     }
     return results;
 }

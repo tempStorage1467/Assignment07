@@ -15,6 +15,7 @@
 #include "TrailblazerTypes.h"
 #include "TrailblazerPQueue.h"
 #include "map.h"
+#include "set.h"
 
 class PrimHelper {
 public:
@@ -29,7 +30,7 @@ public:
      * Put all four edges into a priority queue
      * Pull out lowest edge and see if the two ends are a part of the same set
      */
-    Edge getSmallestEligibleNeighborEdge(Loc);
+    Edge getNextEdge(Set<Loc>& visited);
     
 private:
     UnionFind* clusters;
