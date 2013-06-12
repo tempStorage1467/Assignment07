@@ -1,10 +1,13 @@
-//
-//  UnionFind.h
-//  Trailblazer
-//
-//  Created by Eric Beach on 6/8/13.
-//
-//
+/******************************************************************************
+ * File: UnionFind.h
+ *
+ * Eric Beach
+ *
+ * Assignment 7 -- Extension
+ * Implementation of a UnionFind data structure
+ *   (i.e., Disjoint-set data structure)
+ * http://en.wikipedia.org/wiki/Disjoint-set_data_structure
+ */
 
 #ifndef __Trailblazer__UnionFind__
 #define __Trailblazer__UnionFind__
@@ -13,6 +16,13 @@
 #include "TrailblazerTypes.h"
 #include "TrailblazerGraphics.h"
 
+/*
+ * Create a Disjoint-set data structure (i.e., Union/Find data structure).
+ * This class is important for both Prim's algorithm as well as Kruskal's
+ *   algorithm. Its main two functions are:
+ *   (1) find - determine which set the the specific location is in.
+ *   (2) join - join two sets together by making Set B a child of Set A.
+ */
 class UnionFind {
  public:
     // the maximum set number that this class should store

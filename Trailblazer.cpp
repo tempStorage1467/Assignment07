@@ -5,6 +5,10 @@
  *
  * Implementation of the graph algorithms that comprise the Trailblazer
  * assignment.
+ *
+ * Extensions:
+ *   (1) Union-set data structure to store
+ *   (2) Maze generation via Prim's algorithm
  */
 
 #include "Trailblazer.h"
@@ -154,7 +158,71 @@ shortestPath(Loc start,
     return finalPath;
 }
 
-Set<Edge> createMazePrim(int numRows, int numCols);
+/* Function: createMazePrim
+ *
+ * Take a number of rows and a number of columns and construct a maze
+ *   by eliminating some nodes via Prim's Algorithm
+ */
+Set<Edge> createMazePrim(int numRows, int numCols) {
+    // STEP 1: Construct the edges and place them into a data structure
+    //         that will hold information about edges for use with Prim's
+    //         algorithm
+    PrimHelper primHelper(numRows, numCols);
+    
+    //         Step 1A: Construct Horizontal Edges
+    for (int row = 0; row < numRows; row++) {
+        for (int col = 0; col < numCols - 1; col++) {
+            Loc a = makeLoc(row, col);
+            Loc b = makeLoc(row, col + 1);
+            Edge ab = makeEdge(a, b);
+            
+            // add the constructed edge to the repository of edges stored
+            //   for use by Prim's algorithm
+            primHelper.add(ab, randomReal(0, 100));
+        }
+    }
+    
+    //         Step 1B: Construct Vertical Edges
+    for (int col = 0; col < numCols; col++) {
+        for (int row = 0; row < numRows - 1; row++) {
+            Loc a = makeLoc(row, col);
+            Loc b = makeLoc(row + 1, col);
+            Edge ab = makeEdge(a, b);
+
+            // add the constructed edge to the repository of edges stored
+            //   for use by Prim's algorithm
+            primHelper.add(ab, randomReal(0, 100));
+        }
+    }
+
+    // STEP 2: Traverse through the graph picking the minimum adjacent node
+    //   that does not create a cycle yet has one edge that we've already
+    //   visited
+    // STEP 2-A: Create a set of nodes (i.e., Loc's) that we've visited
+    Set<Loc> visited;
+    
+    // STEP 2-B: Pick arbitrary node to seed the main process of Prim's algorithm
+    //           This will be the first visited location
+    Loc nextLoc = makeLoc(numRows / 2, numCols / 2);
+    visited += nextLoc;
+    
+    // STEP 2-C: Create a set of result edges (i.e., the final edges)
+    Set<Edge> results;
+    
+    // Step 2:D Choose the smallest elligable neighbor edge from all the
+    //          locations we've visited thus far and then move
+    //          to that location and repeat this step
+    while (true) {
+        try {
+            Edge nextEdge = primHelper.getNextEdge(visited);
+            results += nextEdge;
+        } catch (ErrorException) {
+            // nothing more to explore, so quit
+            break;
+        }
+    }
+    return results;
+}
 
 /* Function: createMaze
  *
@@ -162,6 +230,10 @@ Set<Edge> createMazePrim(int numRows, int numCols);
  *   by eliminating some nodes via Kruskal's Algorithm
  */
 Set<Edge> createMaze(int numRows, int numCols) {
+    // The following line of code can be commented/uncommented to set
+    //   whether maze generation happens via Kruskal's algorithm or Prim's algorithm.
+    // Since the default assignment specifies Kruskal's algorithm, I have
+    //   commented out the following line so Kruskal's algorithm is used.
     return createMazePrim(numRows, numCols);
     
     // STEP 1: Construct the edges and place them into a data structure
@@ -222,57 +294,4 @@ Set<Edge> createMaze(int numRows, int numCols) {
         //         Step 3C: Otherwise, skip the edge.
     }
     return result;
-}
-
-Set<Edge> createMazePrim(int numRows, int numCols) {
-    // STEP 1: Construct the edges and place them into a data structure
-    PrimHelper primHelper(numRows, numCols);
-    
-    //         Step 1A: Construct Horizontal Edges
-    for (int row = 0; row < numRows; row++) {
-        for (int col = 0; col < numCols - 1; col++) {
-            Loc a = makeLoc(row, col);
-            Loc b = makeLoc(row, col + 1);
-            Edge ab = makeEdge(a, b);
-            
-            primHelper.add(ab, randomReal(0, 100));
-        }
-    }
-
-    //         Step 1B: Construct Vertical Edges
-    for (int col = 0; col < numCols; col++) {
-        for (int row = 0; row < numRows - 1; row++) {
-            Loc a = makeLoc(row, col);
-            Loc b = makeLoc(row + 1, col);
-            Edge ab = makeEdge(a, b);
-            
-            primHelper.add(ab, randomReal(0, 100));
-        }
-    }
-    
-    // STEP 2: Traverse through the graph picking the minimum adjacent node
-    //   that does not create a cycle
-
-    // STEP 2-A: Create a set of nodes (i.e., Loc's) that we've visited
-    Set<Loc> visited;
-    
-    // STEP 2-B: Pick arbitrary node to seed the main process of Prim's algorithm
-    Loc nextLoc = makeLoc(numRows / 2, numCols / 2);
-    visited += nextLoc;
-    
-    // STEP 2-C: Create a set of result edges (i.e., the final edges)
-    Set<Edge> results;
-    
-    // Step 2:D Choose the smallest elligable edge from a location and the move
-    //          to that location and repeat this step
-    while (true) {
-        try {
-            Edge nextEdge = primHelper.getNextEdge(visited);
-            results += nextEdge;
-        } catch (ErrorException) {
-            // nothing more to explore, so quit
-            break;
-        }
-    }
-    return results;
 }
