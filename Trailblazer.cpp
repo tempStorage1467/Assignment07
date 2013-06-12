@@ -73,15 +73,15 @@ shortestPath(Loc start,
     // color the start node yellow; this also denotes that
     //   the node is in the PQueue but has not been dequeued yet
     /*
-     * Initially, I updated the cell color Grid and called colorCell from a
-     *   wrapper function. This ensured that we never accidently introduce a
+     * Initially, I had a wrapper function that both colored the grid and
+     *   called colorCell. This ensured that we never accidently introduce a
      *   bug where the status of the cell is changed in one
      *   location (i.e., the Grid that tracks the cell status)
      *   but there is no attendant call to colorCell();
      *
      * That function had the following signature:
-     void setNodeColor(Loc cell, Grid<Color>& nodeColors,
-     Grid<double>& world, Color color);
+     *    void setNodeColor(Loc cell, Grid<Color>& nodeColors,
+     *      Grid<double>& world, Color color);
      * I removed this function in order to stay more close to this assignment
      *   predefined method signatures.
      */
