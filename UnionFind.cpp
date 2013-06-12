@@ -32,7 +32,7 @@ UnionFind::~UnionFind() {
 }
 
 /*
- * Find the root node number of a particular node.
+ * Find the root node number for a particular node.
  * This is used to determine whether two nodes are in the same set (i.e.,
  *   if two nodes have the same root, they are in the same set)
  */
@@ -53,7 +53,8 @@ void UnionFind::join(const Loc& a, const Loc& b) {
 }
 
 /*
- * Add a new Location object into the data structure as a singleton Location.
+ * Add a new Location object into the data structure as a singleton
+ *   Location (i.e., as its own single element set).
  */
 void UnionFind::makeSet(const Loc& input) {
     int nodeNum = locToNodeNum(input);
@@ -66,15 +67,15 @@ void UnionFind::makeSet(const Loc& input) {
  * Find the root node number of a particular node.
  * This is used to determine whether two nodes are in the same set (i.e.,
  *   if two nodes have the same root, they are in the same set)
- * $nodeNum is the key value in nodeParents for a given particular node.
+ * $nodeNum is the key value in $nodeParents for a given particular node.
  */
 int UnionFind::find(const int nodeNum) {
     // if the node toFind is the parent of itself, we have found the
-    //   root location
+    //   root location (i.e., we have found the parent node number)
     if (nodeParents[nodeNum] == nodeNum) {
         return nodeNum;
     }
-    // the node toFind has a parent Location that is not itself,
+    // the node toFind has a parent Location that is not itself, so
     //   traverse back to find the Location representative of the set
     //   that toFind is a part of
     else {

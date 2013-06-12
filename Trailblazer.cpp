@@ -179,6 +179,7 @@ shortestPath(Loc start,
 }
 
 /* Function: createMazePrim
+ * Project Extension
  *
  * Take a number of rows and a number of columns and construct a maze
  *   by eliminating some nodes via Prim's Algorithm
@@ -251,10 +252,12 @@ Set<Edge> createMazePrim(int numRows, int numCols) {
  */
 Set<Edge> createMaze(int numRows, int numCols) {
     // The following line of code can be commented/uncommented to set
-    //   whether maze generation happens via Kruskal's algorithm or Prim's algorithm.
+    //   whether maze generation happens via Kruskal's algorithm
+    //   or Prim's algorithm.
     // Since the default assignment specifies Kruskal's algorithm, I have
     //   commented out the following line so Kruskal's algorithm is used.
-    return createMazePrim(numRows, numCols);
+
+    //   return createMazePrim(numRows, numCols);
     
     // STEP 1: Construct the edges and place them into a data structure
     Set<Edge> edges;
@@ -287,7 +290,7 @@ Set<Edge> createMaze(int numRows, int numCols) {
     //   the same cluster
     UnionFind clusters(numRows * numCols, numCols);
     
-    // Place the edges into the PriorityQueue and the UnionFind
+    // Place the edge and end locations into the PriorityQueue and the UnionFind
     foreach (Edge next in edges) {
         clusters.makeSet(next.start);
         clusters.makeSet(next.end);

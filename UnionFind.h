@@ -22,6 +22,10 @@
  *   algorithm. Its main two functions are:
  *   (1) find - determine which set the the specific location is in.
  *   (2) join - join two sets together by making Set B a child of Set A.
+ * The key to this class is as follows: nodes with the same
+ *   parent belong to the same set
+ * In other words: if two locations are passed into find and they
+ *   both return the same root, then they are in the same set
  */
 class UnionFind {
  public:
@@ -48,10 +52,6 @@ class UnionFind {
 
 private:
     // array to store the parent nodes for each node
-    // the key to this class is as follows: nodes with the same
-    //   parent belong to the same set
-    // in other words: if two locations are passed into find and they
-    //   both return the same root, then they are in the same set
     int* nodeParents;
     
     // the maximum set number that this class should store
