@@ -52,7 +52,7 @@ shortestPath(Loc start,
      *    is such a structure. Further, it is always a good idea to use
      *    someone else's well written and optimized library code when you can
      *    instead of writing your own.
-     * Three Grids: parentNode, nodeCosts, cellColors
+     * Three Grids: parentNode, nodeCosts, nodeColors
      */
     // store the parent cells/nodes for each specific location
     Grid<Loc> parentNode(world.numRows(), world.numCols());
@@ -72,6 +72,19 @@ shortestPath(Loc start,
     
     // color the start node yellow; this also denotes that
     //   the node is in the PQueue but has not been dequeued yet
+    /*
+     * Initially, I updated the cell color Grid and called colorCell from a
+     *   wrapper function. This ensured that we never accidently introduce a
+     *   bug where the status of the cell is changed in one
+     *   location (i.e., the Grid that tracks the cell status)
+     *   but there is no attendant call to colorCell();
+     *
+     * That function had the following signature:
+     void setNodeColor(Loc cell, Grid<Color>& nodeColors,
+     Grid<double>& world, Color color);
+     * I removed this function in order to stay more close to this assignment
+     *   predefined method signatures.
+     */
     nodeColors[start.row][start.col] = YELLOW;
     colorCell(world, start, YELLOW);
     
@@ -79,7 +92,7 @@ shortestPath(Loc start,
     nodeCosts[start.row][start.col] = 0;
 
     // Enqueue startNode into the priority queue with priority 0
-    //   or (h(start,end).
+    //   or (h(start,end)).
     locsToExamine.enqueue(start, heuristic(start, end, world));
     
     // While not all nodes have been visited
