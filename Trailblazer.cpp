@@ -44,7 +44,7 @@ shortestPath(Loc start,
              double heuristic(Loc start, Loc end, Grid<double>& world)) {
     ////////// SETUP CODE //////////
     /*
-     * From an efficiency stanfpoint, I chose to use three grids to represent
+     * From an efficiency standpoint, I chose to use three Grids to represent
      *    the underlying data I needed for this assignment (parent nodes,
      *    node costs, and node colors). I did this because in using this data,
      *    I would always know the (row, col) coordinates and as such, I wanted
@@ -52,6 +52,7 @@ shortestPath(Loc start,
      *    is such a structure. Further, it is always a good idea to use
      *    someone else's well written and optimized library code when you can
      *    instead of writing your own.
+     * Three Grids: parentNode, nodeCosts, cellColors
      */
     // store the parent cells/nodes for each specific location
     Grid<Loc> parentNode(world.numRows(), world.numCols());
@@ -67,17 +68,19 @@ shortestPath(Loc start,
     // this grid is also used to store which cells are in the priority queue
     //   as a cell that is in the priority queue will be yellow while a cell
     //   that has been visited will be green
-    Grid<Color> cellColors(world.numRows(), world.numCols());
+    Grid<Color> nodeColors(world.numRows(), world.numCols());
     
-    // color the start node yellow; marks node is in PQueue
-    cellColors[start.row][start.col] = YELLOW;
+    // color the start node yellow; this also denotes that
+    //   the node is in the PQueue but has not been dequeued yet
+    nodeColors[start.row][start.col] = YELLOW;
     colorCell(world, start, YELLOW);
     
-    // set startNode's candidate distance to 0 (or h(startNode, endNode)).
-    nodeCosts[start.row][start.col] = heuristic(start, end, world);
+    // set startNode's candidate distance to 0.
+    nodeCosts[start.row][start.col] = 0;
 
-    // Enqueue startNode into the priority queue with priority 0.
-    locsToExamine.enqueue(start, 0);
+    // Enqueue startNode into the priority queue with priority 0
+    //   or (h(start,end).
+    locsToExamine.enqueue(start, heuristic(start, end, world));
     
     // While not all nodes have been visited
     while (true) {
@@ -87,7 +90,7 @@ shortestPath(Loc start,
         // Color curr green. (The candidate distance dist that is currently
         //   stored for node curr is the length of the shortest path from
         //   startNode to curr.)
-        cellColors[curr.row][curr.col] = GREEN;
+        nodeColors[curr.row][curr.col] = GREEN;
         colorCell(world, curr, GREEN);
         
         // If curr is the destination node endNode, you have found the
@@ -116,8 +119,8 @@ shortestPath(Loc start,
                 //   (b) Set v's candidate distance to be dist + L.
                 //   (c) Set v's parent to be curr.
                 //   (d) Enqueue v into the priority queue with priority dist + L.
-                if (cellColors[v.row][v.col] == GRAY) {
-                    cellColors[v.row][v.col] = YELLOW;
+                if (nodeColors[v.row][v.col] == GRAY) {
+                    nodeColors[v.row][v.col] = YELLOW;
                     colorCell(world, v, YELLOW);
                     
                     nodeCosts[row][col] = vPathCost;
@@ -128,7 +131,7 @@ shortestPath(Loc start,
                 //   (a) Set v's candidate distance to be dist + L.
                 //   (b) Set v's parent to be curr.
                 //   (c) Update v's priority in the priority queue to dist + L.
-                else if (cellColors[v.row][v.col] == YELLOW &&
+                else if (nodeColors[v.row][v.col] == YELLOW &&
                            nodeCosts[v.row][v.col] > vPathCost) {
                     nodeCosts[v.row][v.col] = vPathCost;
                     parentNode[v.row][v.col] = curr;
