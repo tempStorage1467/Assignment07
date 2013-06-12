@@ -95,7 +95,8 @@ shortestPath(Loc start,
     //   or (h(start,end)).
     locsToExamine.enqueue(start, heuristic(start, end, world));
     
-    // While not all nodes have been visited
+    // Continue iterating through nodes until we have found the end cell
+    //   (i.e., curr == end)
     while (true) {
         // Dequeue the lowest-cost node curr from the priority queue.
         Loc curr = locsToExamine.dequeueMin();
