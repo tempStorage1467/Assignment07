@@ -114,7 +114,7 @@ shortestPath(Loc start,
         // For each node v connected to curr by an edge of length L:
         for (int row = curr.row - 1; row < curr.row + 2; row++) {
             for (int col = curr.col - 1; col < curr.col + 2; col++) {
-                //if (row == curr.row && col == curr.col) continue;
+                if (row == curr.row && col == curr.col) continue;
                 if (row < 0 || row >= world.numRows() ||
                     col < 0 || col >= world.numCols()) continue;
                                 
@@ -128,11 +128,14 @@ shortestPath(Loc start,
                 double vPathCost = nodeCosts[curr.row][curr.col] +
                                    costFn(curr, v, world);
                 
-                
                 // If v is gray: (a) Color v yellow.
                 //   (b) Set v's candidate distance to be dist + L.
                 //   (c) Set v's parent to be curr.
                 //   (d) Enqueue v into the priority queue with priority dist + L.
+                // Note: To conform to the tips and handout, I did not
+                //   create another enum for node status (e.g., unseen,
+                //   enqueued, visisited). However, overloading
+                //   the meaning of a color is not ideal.
                 if (nodeColors[v.row][v.col] == GRAY) {
                     nodeColors[v.row][v.col] = YELLOW;
                     colorCell(world, v, YELLOW);
